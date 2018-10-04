@@ -1,0 +1,62 @@
+grammar org.xtext.grammarxml.GrammarXML with org.eclipse.xtext.common.Terminals
+
+generate grammarXML "http://www.xtext.org/grammarxml/GrammarXML"
+
+Model:
+	(prolog = Prolog)? 
+	 bodyElement = FullElement
+;
+
+Prolog:
+	name = '<?xml'  version=VersionValue encoding = EncodingValue? '?>'
+;
+
+VersionValue:
+	'version' '=' '"' name = VERSION '"'
+;
+
+EncodingValue:
+	'encoding' '=' '"' name = ID '"'
+;
+
+BodyElement:
+	FullElement | ShortElement
+;
+
+FullElement:
+	'<' name = ID attributes += AttributeProperty* '>' 
+			contentData = Content? children += BodyElement*
+	'</' superType = [FullElement] '>'
+;
+
+ShortElement:
+   '<' name =ID props+=AttributeProperty* '/>'
+;
+
+AttributeProperty:
+  name = ID '=' value = Attribute
+;
+
+Attribute:
+	'"' Content '"'
+;
+
+Content:
+	(ID|STRING|ANY_OTHER|'.'|':') (ID|STRING|ANY_OTHER|WS|'.'|':')*
+;
+
+@Override
+terminal ID: 
+	('a'..'z'|'A'..'Z'|'_') ('a'..'z'|'A'..'Z'|'_'|'-'|'0'..'9')*
+;
+
+@Override 
+terminal STRING:
+	"'" ( '\\' ('b'|'t'|'n'|'f'|'r'|'u'|'"'|"'"|'\\') | !('\\'|"'") )* "'" 
+;
+
+terminal VERSION: '1.' (INT)*;
+
+
+
+
